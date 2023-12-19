@@ -4,7 +4,83 @@ description: Get started with a free and open-source admin dashboard layout buil
 layout: dashboard
 footer: true
 ---
+Import JS
+<script src="/js/transaction.js"></script>
 <script>
+
+    const datamapper = (tx_data) => {
+      tx_input_list = document.getElementById("tx-input-list");
+
+      document.getElementById("tx_block_id").innerText = tx_data["transaction"]["block_id"]
+      document.getElementById("tx_hash").innerText = tx_data["transaction"]["hash"]
+      document.getElementById("tx_date").innerText = tx_data["transaction"]["time"]
+      document.getElementById("tx_time").innerText = tx_data["transaction"]["time"]
+      document.getElementById("tx_size").innerText = tx_data["transaction"]["size"]
+      document.getElementById("tx_weight").innerText = tx_data["transaction"]["weight"]
+
+      
+      const tx_inputs_data = tx_data["inputs"];
+      tx_inputs_data.forEach(element => {
+          tx_input_list.innerHTML += `
+          <div class="flex items-center p-3 mb-3.5 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div class="flex items-center justify-center w-6 h-6 mr-3 rounded-lg bg-primary-100 dark:bg-primary-900">
+                  <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4m6-8L7 5l4 4"/>
+                  </svg>
+                </div>
+                <div class="mr-4">
+                    <p class="text-sm font-bold text-blue-600 dark:text-blue-600">${element.recipient}</p>
+                    <p class="text-sm"><span class="text-sm text-gray-800 dark:text-white">${(element.value / 1e8).toLocaleString(undefined, { minimumFractionDigits: 8, maximumFractionDigits: 8 })} BTC</span> - <span>${(element.value_usd).toLocaleString()} $</span></p>
+                </div>
+                <div class="flex items-center ml-auto">
+                  <button type="button" class="p-2 rounded hover:bg-gray-100">
+                    <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7.708 2.292.706-.706A2 2 0 0 1 9.828 1h6.239A.97.97 0 0 1 17 2v12a.97.97 0 0 1-.933 1H15M6 5v4a1 1 0 0 1-1 1H1m11-4v12a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V9.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 5h5.239A.97.97 0 0 1 12 6Z"/>
+                    </svg>
+                    <span class="sr-only">Download</span>
+                  </button>
+                </div>
+              </div>
+          `
+      });
+
+      tx_output_list = document.getElementById("tx-output-list");
+      const tx_outputs_data = tx_data["outputs"];
+      tx_outputs_data.forEach(element => {
+        tx_output_list.innerHTML += `
+          <div class="flex items-center p-3 mb-3.5 border border-gray-200 dark:border-gray-700 rounded-lg">
+
+                <div class="mr-4">
+                    <p class="text-sm font-bold text-blue-600 dark:text-blue-600">${element.recipient}</p>
+                    <p class="text-sm"><span class="text-sm text-gray-800 dark:text-white">${(element.value / 1e8).toLocaleString(undefined, { minimumFractionDigits: 8, maximumFractionDigits: 8 })} BTC</span> - <span>${(element.value_usd).toLocaleString()} $</span></p>
+                </div>
+                <div class="flex items-center ml-auto">
+                  <button type="button" class="p-2 rounded hover:bg-gray-100">
+                    <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7.708 2.292.706-.706A2 2 0 0 1 9.828 1h6.239A.97.97 0 0 1 17 2v12a.97.97 0 0 1-.933 1H15M6 5v4a1 1 0 0 1-1 1H1m11-4v12a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V9.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 5h5.239A.97.97 0 0 1 12 6Z"/>
+                    </svg>
+                    <span class="sr-only">Download</span>
+                  </button>
+                  <div class="flex items-center justify-center w-4 h-4 mr-3 rounded-lg bg-primary-100 dark:bg-primary-900">
+                    <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 9 4-4-4-4M1 9l4-4-4-4"/>
+                    </svg>
+                </div>
+                </div>
+
+              </div>
+          `
+      });
+
+    }
+
+    const seachButtonClick = async() => {
+      const btc_chain = "bitcoin"
+      const tx_hash_input = document.getElementById("tx_hash_input").value
+      const tx_data = await getTransactionData(tx_hash_input,btc_chain)
+      datamapper(tx_data)
+    }
+
     var tx_data = {
             "transaction": {
                 "block_id": 575013,
@@ -3260,62 +3336,9 @@ footer: true
       }
       
     document.addEventListener('DOMContentLoaded', function() {
-    tx_input_list = document.getElementById("tx-input-list");
     
-    const tx_inputs_data = tx_data["inputs"];
-    tx_inputs_data.forEach(element => {
-        tx_input_list.innerHTML += `
-        <div class="flex items-center p-3 mb-3.5 border border-gray-200 dark:border-gray-700 rounded-lg">
-              <div class="flex items-center justify-center w-6 h-6 mr-3 rounded-lg bg-primary-100 dark:bg-primary-900">
-                <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4m6-8L7 5l4 4"/>
-                </svg>
-              </div>
-              <div class="mr-4">
-                  <p class="text-sm font-bold text-blue-600 dark:text-blue-600">${element.recipient}</p>
-                  <p class="text-sm"><span class="text-sm text-gray-800 dark:text-white">${(element.value / 1e8).toLocaleString(undefined, { minimumFractionDigits: 8, maximumFractionDigits: 8 })} BTC</span> - <span>${(element.value_usd).toLocaleString()} $</span></p>
-              </div>
-              <div class="flex items-center ml-auto">
-                <button type="button" class="p-2 rounded hover:bg-gray-100">
-                  <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7.708 2.292.706-.706A2 2 0 0 1 9.828 1h6.239A.97.97 0 0 1 17 2v12a.97.97 0 0 1-.933 1H15M6 5v4a1 1 0 0 1-1 1H1m11-4v12a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V9.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 5h5.239A.97.97 0 0 1 12 6Z"/>
-                  </svg>
-                  <span class="sr-only">Download</span>
-                </button>
-              </div>
-            </div>
-        `
-    });
-
-    tx_output_list = document.getElementById("tx-output-list");
-    const tx_outputs_data = tx_data["outputs"];
-    tx_outputs_data.forEach(element => {
-      tx_output_list.innerHTML += `
-        <div class="flex items-center p-3 mb-3.5 border border-gray-200 dark:border-gray-700 rounded-lg">
-
-              <div class="mr-4">
-                  <p class="text-sm font-bold text-blue-600 dark:text-blue-600">${element.recipient}</p>
-                  <p class="text-sm"><span class="text-sm text-gray-800 dark:text-white">${(element.value / 1e8).toLocaleString(undefined, { minimumFractionDigits: 8, maximumFractionDigits: 8 })} BTC</span> - <span>${(element.value_usd).toLocaleString()} $</span></p>
-              </div>
-              <div class="flex items-center ml-auto">
-                <button type="button" class="p-2 rounded hover:bg-gray-100">
-                  <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7.708 2.292.706-.706A2 2 0 0 1 9.828 1h6.239A.97.97 0 0 1 17 2v12a.97.97 0 0 1-.933 1H15M6 5v4a1 1 0 0 1-1 1H1m11-4v12a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V9.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 5h5.239A.97.97 0 0 1 12 6Z"/>
-                  </svg>
-                  <span class="sr-only">Download</span>
-                </button>
-                <div class="flex items-center justify-center w-4 h-4 mr-3 rounded-lg bg-primary-100 dark:bg-primary-900">
-                  <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7 9 4-4-4-4M1 9l4-4-4-4"/>
-                  </svg>
-              </div>
-              </div>
-
-            </div>
-        `
-    });
-
   });
+
 </script>
 <div class="px-4 pt-6">
 
@@ -3337,101 +3360,133 @@ footer: true
 
     <div class="mb-6">
         <!-- <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Transaction ID</label> -->
-        <input placeholder="Search for Transactions, Addresses, Blocks and Embedded Text Data..." type="text" id="large-input" class="block mb-5 w-full p-4 text-gray-900 border border-blue-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-blue-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <input placeholder="Search for Transactions, Addresses, Blocks and Embedded Text Data..." type="text" id="tx_hash_input" class="block mb-5 w-full p-4 text-gray-900 border border-blue-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-blue-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
         <p class="block dark:text-white" >Search Example: <span class="text-blue-600" >Address</span> <p>
       </div>
     <div>
-        <button onclick="go_to_graph_page()" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Anaylzie & Search</button>
+        <button onclick="seachButtonClick()" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Anaylzie & Search</button>
     </div>
   </div>
 
 
   <!-- BASIC DATA #1 -->
   <div class="mt-4 grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+    <div class="2xl:col-span-2">
+       <!-- LEFT CONTENT -->
+      <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm  dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+        <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Bitcoin Transaction</span>
 
+        <div>
+          <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">Broadcasted on 07 May 2019 10:47:18 GMT+5:30</p>
+        </div>
 
-    <!-- LEFT CONTENT -->
-    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-      <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Bitcoin Transaction</span>
+        <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
 
-      <div>
-        <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">Broadcasted on 07 May 2019 10:47:18 GMT+5:30</p>
+        <div>
+          <h3 class="text-base font-normal dark:text-white">Summary</h3>
+          <p class="text-gray-500 dark:text-gray-400">This transaction was first broadcasted on the Bitcoin network on May 07, 2019 at 10:05 AM GMT+5:30. The transaction currently has 246,175 confirmations on the network. The current value of this transaction is now $305,828,307.</p>
+        </div>
+
+        <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
+
+        <div>
+          <h3 class="text-base font-normal dark:text-white">Advance Details </h3>
+          <div class="flex justify-around">
+            <!-- First List -->
+            <ul class="pl-5 pt-2 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                <li>
+                    <span class="dark:text-white font-semibold">Block ID</span>: <span id="tx_block_id"></span>
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">ID</span>: <span id="tx_id"></span>
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Hash</span>: <span  id="tx_hash"></span>
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Date</span>: <span id="tx_date" ></span>
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Time</span>: <span  id="tx_time"></span>
+                </li>
+            </ul>
+        
+            <!-- Second List -->
+            <ul class="pl-10 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                <li>
+                    <span class="dark:text-white font-semibold">Size</span>: 11982
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Weight</span>: 47388
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Version</span>: 2
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Lock Time</span>: 575012
+                </li>
+                <li>
+                    <span class="dark:text-white font-semibold">Is Coinbase</span>: false
+                </li>
+            </ul>
+        
+            <!-- Third List (Add more as needed) -->
+            <ul class="pl-10 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                <li>
+                    <span id="tx_has_witness" class="dark:text-white font-semibold">Has Witness</span>: true
+                </li>
+                <li>
+                    <span id="tx_input_count" class="dark:text-white font-semibold">Input Count</span>: 71
+                </li>
+                <li>
+                    <span id="tx_output_count" class="dark:text-white font-semibold">Output Count</span>: 44
+                </li>
+                <li>
+                    <span id="tx_input_total" class="dark:text-white font-semibold">Input Total</span>: 707419295031
+                </li>
+                <li>
+                    <span id="tx_input_total_usd" class="dark:text-white font-semibold">Input Total USD</span>: 40804936
+                </li>
+            </ul>
+        </div>
+        </div>
+
       </div>
 
-      <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
-
-      <div>
-        <h3 class="text-base font-normal dark:text-white">Summary</h3>
-        <p class="text-gray-500 dark:text-gray-400">This transaction was first broadcasted on the Bitcoin network on May 07, 2019 at 10:05 AM GMT+5:30. The transaction currently has 246,175 confirmations on the network. The current value of this transaction is now $305,828,307.</p>
-      </div>
-
-      <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
-
-      <div>
-        <h3 class="text-base font-normal dark:text-white">Advance Details </h3>
-        <div class="flex justify-around">
-          <!-- First List -->
-          <ul class="pl-5 pt-2 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
-              <li>
-                  <span class="dark:text-white font-semibold">Block ID</span>: 575013
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">ID</span>: 410775577
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Hash</span>: e8b4-05ea
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Date</span>: 2019-05-07
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Time</span>: 2019-05-07 17:17:18
-              </li>
-          </ul>
-      
-          <!-- Second List -->
-          <ul class="pl-10 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
-              <li>
-                  <span class="dark:text-white font-semibold">Size</span>: 11982
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Weight</span>: 47388
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Version</span>: 2
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Lock Time</span>: 575012
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Is Coinbase</span>: false
-              </li>
-          </ul>
-      
-          <!-- Third List (Add more as needed) -->
-          <ul class="pl-10 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
-              <li>
-                  <span class="dark:text-white font-semibold">Has Witness</span>: true
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Input Count</span>: 71
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Output Count</span>: 44
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Input Total</span>: 707419295031
-              </li>
-              <li>
-                  <span class="dark:text-white font-semibold">Input Total USD</span>: 40804936
-              </li>
-          </ul>
-      </div>
+      <!-- TRANSACTION #1 -->
+      <div class="p-4 mt-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
+        <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Transactions</span>
+  
+        <div class="mt-2">
+          <h3 class="text-base font-normal dark:text-white">Summary</h3>
+          <p class="text-gray-500 dark:text-gray-400">This transaction was first broadcasted on the Bitcoin network on May 07, 2019 at 10:05 AM GMT+5:30. The transaction currently has 246,175 confirmations on the network. The current value of this transaction is now $305,828,307.</p>
+        </div>
+  
+        <hr class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
+  
+        <div>
+          <div class="flex justify-around">
+            <!-- Input List-->
+            <ul id="tx-input-list" class="pl-2 pt-2 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+              <h3 class="text-lg mb-4  font-semibold text-gray-900 dark:text-white">Inputs: </h3>
+            </ul>
+        
+            <!-- Second List -->
+            <ul id="tx-output-list" class="pl-2 pt-2  max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+              <h3 class="text-lg mb-4  font-semibold text-gray-900 dark:text-white">Outputs: </h3>
+            </ul>
+        
+        </div>
+        </div>
+  
       </div>
 
     </div>
+
+
+   
     
-    
+    <!-- RIGHT CONTENT  -->
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">
     
       <div class="my-4">
@@ -3460,7 +3515,7 @@ footer: true
   </div>
 
    <!-- TRANSACTION #1 -->
-   <div class="mt-4 grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+   <!-- <div class="mt-4 grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
 
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
       <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Transactions</span>
@@ -3474,12 +3529,10 @@ footer: true
 
       <div>
         <div class="flex justify-around">
-          <!-- Input List-->
           <ul id="tx-input-list" class="pl-2 pt-2 max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
             <h3 class="text-lg mb-4  font-semibold text-gray-900 dark:text-white">Inputs: </h3>
-          </ul>s
+          </ul>
       
-          <!-- Second List -->
           <ul id="tx-output-list" class="pl-2 pt-2  max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
             <h3 class="text-lg mb-4  font-semibold text-gray-900 dark:text-white">Outputs: </h3>
           </ul>
@@ -3489,7 +3542,7 @@ footer: true
 
     </div>
   
-  </div>
+  </div> -->
 
 
 
